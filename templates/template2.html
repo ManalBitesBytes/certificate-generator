@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>شهادة تقدير</title>
+    <style>
+        /* Import Google Fonts - ensure they are loaded for WeasyPrint */
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=Amiri:wght@400;700&display=swap');
+
+        /* Global reset and box-sizing */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Define the page size for PDF output */
+        /* A4 size: 210mm x 297mm. Set margins to ensure content fits well. */
+        @page {
+            size: A4; /* Or 'Letter', 'A3', etc. */
+            margin: 15mm; /* Adjust margins as needed */
+        }
+
+        body {
+            font-family: 'Tajawal', 'Amiri', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            direction: rtl;
+            padding: 20px; /* Padding for screen view */
+        }
+
+        /* Ensure the certificate container has a fixed width for PDF rendering */
+        /* 850px is roughly proportional to A4 width minus margins, adjust as needed */
+        .certificate-container {
+            position: relative;
+            width: 100%;
+            max-width: 850px; /* Adjusted for better A4 fit */
+            background: #fff;
+            border-radius: 25px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.25);
+            overflow: hidden;
+            border: 15px solid transparent;
+            border-image: linear-gradient(45deg, #d4af37, #f1c40f, #d4af37);
+            border-image-slice: 1;
+            background-clip: padding-box;
+        }
+
+        .certificate-border {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 15px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .certificate {
+            position: relative;
+            padding: 60px; /* Maintain original padding */
+            z-index: 2;
+            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(248,248,248,0.95) 100%);
+        }
+
+        .watermark {
+            position: absolute;
+            opacity: 0.08;
+            font-size: 200px;
+            font-weight: 900;
+            color: #d4af37;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-15deg);
+            z-index: 0;
+            white-space: nowrap;
+            user-select: none;
+            font-family: 'Amiri', serif;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .institute-seal {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 120px;
+            height: 120px;
+            border: 3px solid #d4af37;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #d4af37;
+            font-weight: bold;
+            line-height: 1.4;
+            text-align: center;
+            background: rgba(255,255,255,0.9);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .crown-container {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .crown {
+            width: 120px;
+            height: 100px;
+            background: linear-gradient(135deg, #d4af37, #f1c40f);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            margin: 0 auto;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            box-shadow: 0 15px 30px rgba(212, 175, 55, 0.3);
+            z-index: 2;
+        }
+
+        .crown::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.4), transparent);
+            z-index: -1;
+        }
+
+        .title {
+            font-size: 48px;
+            font-weight: 900;
+            color: #2c3e50;
+            margin: 20px 0 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+            display: inline-block;
+            font-family: 'Amiri', serif;
+        }
+
+        .title::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            right: 0;
+            width: 50%;
+            height: 4px;
+            background: linear-gradient(90deg, #d4af37, transparent);
+            border-radius: 3px;
+        }
+
+        .subtitle {
+            font-size: 24px;
+            color: #7f8c8d;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .certificate-number {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .content {
+            text-align: center;
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .awarded-to {
+            font-size: 28px;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        .recipient-name {
+            font-size: 56px;
+            font-weight: 700;
+            color: #d4af37;
+            margin-bottom: 40px;
+            padding: 30px 50px;
+            border: 4px solid #d4af37;
+            border-radius: 15px;
+            display: inline-block;
+            min-width: 500px; /* This might be too wide for A4, let's adjust */
+            max-width: 80%; /* Use max-width to allow shrinking */
+            background: rgba(212, 175, 55, 0.05);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            font-family: 'Amiri', serif;
+            word-break: break-word; /* Allow long names to wrap */
+        }
+
+        .recipient-name::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, transparent 100%);
+            pointer-events: none;
+        }
+
+        .decorative-elements {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 30px 0;
+        }
+
+        .decorative-line {
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, #d4af37, #f1c40f, #d4af37);
+            border-radius: 2px;
+            position: relative;
+        }
+
+        .decorative-star {
+            width: 50px;
+            height: 50px;
+            margin: 0 20px;
+            background: #d4af37;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .course-info {
+            font-size: 26px;
+            color: #2c3e50;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            position: relative;
+            font-weight: 500;
+        }
+
+        .achievement-details {
+            background: rgba(245, 245, 245, 0.7);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 40px 0;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            position: relative;
+        }
+
+        .achievement-details::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+            border-radius: 10px;
+            pointer-events: none;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .detail-label {
+            font-weight: 700;
+            color: #d4af37;
+            min-width: 200px;
+            text-align: left;
+        }
+
+        .detail-value {
+            color: #555;
+            text-align: right;
+            flex-grow: 1;
+        }
+
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 60px;
+            position: relative;
+        }
+
+        .signature {
+            text-align: center;
+            flex: 1;
+            position: relative;
+            padding: 0 20px;
+        }
+
+        .signature-box {
+            height: 100px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .signature-line {
+            width: 200px;
+            height: 3px;
+            background: linear-gradient(90deg, #d4af37, #f1c40f);
+            margin: 0 auto;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .signature-text {
+            font-size: 18px;
+            color: #2c3e50;
+            margin-top: 5px;
+            font-weight: 600;
+        }
+
+        .signature-title {
+            font-size: 16px;
+            color: #d4af37;
+            margin-bottom: 10px;
+        }
+
+        .date {
+            font-size: 20px;
+            color: #555;
+            text-align: center;
+            flex: 1;
+            background: rgba(212, 175, 55, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 0 20px;
+            font-weight: 500;
+        }
+
+        .corner-ornament {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            opacity: 0.8;
+            z-index: 1;
+        }
+
+        .corner-ornament.top-right {
+            top: 0;
+            left: 0;
+            border-top: 4px solid #d4af37;
+            border-left: 4px solid #d4af37;
+            border-top-left-radius: 15px;
+        }
+
+        .corner-ornament.top-left {
+            top: 0;
+            right: 0;
+            border-top: 4px solid #d4af37;
+            border-right: 4px solid #d4af37;
+            border-top-right-radius: 15px;
+        }
+
+        .corner-ornament.bottom-right {
+            bottom: 0;
+            left: 0;
+            border-bottom: 4px solid #d4af37;
+            border-left: 4px solid #d4af37;
+            border-bottom-left-radius: 15px;
+        }
+
+        .corner-ornament.bottom-left {
+            bottom: 0;
+            right: 0;
+            border-bottom: 4px solid #d4af37;
+            border-right: 4px solid #d4af37;
+            border-bottom-right-radius: 15px;
+        }
+
+        .gold-stamp {
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, rgba(212, 175, 55, 0.3) 100%);
+            border: 3px dashed rgba(212, 175, 55, 0.5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(212, 175, 55, 0.8);
+            font-size: 16px;
+            font-weight: bold;
+            transform: rotate(-15deg);
+            font-family: 'Amiri', serif;
+        }
+
+        /* Media query for screen responsiveness, separate from print styles */
+        @media (max-width: 768px) {
+            .certificate {
+                padding: 30px;
+            }
+
+            .recipient-name {
+                font-size: 36px;
+                min-width: auto;
+                width: 100%;
+                padding: 20px;
+            }
+
+            .footer {
+                flex-direction: column;
+                align-items: center;
+                gap: 30px;
+            }
+
+            .course-info {
+                font-size: 22px;
+            }
+
+            .title {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="certificate-container">
+        <div class="certificate-border"></div>
+        <div class="watermark">تقدير</div>
+
+        <div class="corner-ornament top-right"></div>
+        <div class="corner-ornament top-left"></div>
+        <div class="corner-ornament bottom-right"></div>
+        <div class="corner-ornament bottom-left"></div>
+
+        <div class="certificate">
+            <div class="institute-seal">
+                الأكاديمية<br>العربية<br>للتميز
+            </div>
+
+            <div class="certificate-number">
+                رقم الشهادة: #{{CERT_NUMBER}}
+            </div>
+
+            <div class="header">
+                <div class="crown-container">
+                    <div class="crown">★</div>
+                </div>
+                <h1 class="title">شهادة تقدير</h1>
+                <p class="subtitle">برعاية وزارة التعليم العالي والبحث العلمي</p>
+            </div>
+
+            <div class="content">
+                <p class="awarded-to">تُمنح هذه الشهادة تقديراً وإعجاباً لـ</p>
+                <div class="recipient-name">{{NAME}}</div>
+
+                <div class="decorative-elements">
+                    <div class="decorative-line"></div>
+                    <div class="decorative-star">★</div>
+                    <div class="decorative-line"></div>
+                </div>
+
+                <div class="course-info">
+                    نظير تميزه وإنجازاته البارزة في البرنامج التدريبي<br>
+                    ولما أظهره من تفانٍ وإبداع في مجال التعلم والتطوير
+                </div>
+
+                <div class="achievement-details">
+                    <div class="detail-row">
+                        <span class="detail-label">اسم البرنامج:</span>
+                        <span class="detail-value">تطوير المهارات القيادية والإدارية</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">المدة:</span>
+                        <span class="detail-value">80 ساعة تدريبية</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">الفترة:</span>
+                        <span class="detail-value">من 15 يناير إلى 20 مارس 2023</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">التقييم:</span>
+                        <span class="detail-value">ممتاز - أعلى تقدير</span>
+                    </div>
+                </div>
+
+                <div class="course-info">
+                    وقد أثبت المكرم خلال فترة التدريب جدارته وكفاءته العالية<br>
+                    وحصل على إشادة جميع المدربين والمشاركين في البرنامج
+                </div>
+            </div>
+
+            <div class="footer">
+                <div class="signature">
+                    <div class="signature-title">رئيس الأكاديمية</div>
+                    <div class="signature-box">
+                        <div class="signature-line"></div>
+                    </div>
+                    <p class="signature-text">أ.د. خالد بن عبدالله السديري</p>
+                </div>
+
+                <div class="date">
+                    <p>تاريخ الإصدار: {{DATE}}</p>
+                    <p>مكان الإصدار: الرياض، المملكة العربية السعودية</p>
+                </div>
+
+                <div class="signature">
+                    <div class="signature-title">المدير التنفيذي للتدريب</div>
+                    <div class="signature-box">
+                        <div class="signature-line"></div>
+                    </div>
+                    <p class="signature-text">د. سارة محمد العتيبي</p>
+                </div>
+            </div>
+
+            <div class="gold-stamp">
+                ختم الأكاديمية
+            </div>
+        </div>
+    </div>
+</body>
+</html>

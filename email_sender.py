@@ -97,8 +97,8 @@ def send_certificates_by_email(csv_file, pdf_dir, sender_email, sender_password,
 
 if __name__ == "__main__":
 
-    SENDER_EMAIL = 'ayathon@parmg.sa'
-    SENDER_PASSWORD = 'Ay@th0n-@srar'
+    SENDER_EMAIL = ''
+    SENDER_PASSWORD = ''
 
 
     SMTP_SERVER = 'smtp.dreamhost.com'

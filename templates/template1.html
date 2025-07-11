@@ -1,0 +1,85 @@
+
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>شهادة مشاركة</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&family=Amiri:wght@400;700&display=swap');
+        @page {
+            size: A4 landscape;
+            margin: 0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Amiri','Tajawal', sans-serif;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .certificate {
+
+            width: 297mm;
+            height: 210mm;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .certificate-background-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /
+            z-index: -1;
+        }
+
+        .name-container {
+            position: absolute;
+            top: 43%;
+            left: 45%;          /* Start from center */
+            transform: translateX(-50%); /* Shift back by half of container's width */
+            width: auto;        /* Let content determine width */
+            max-width: 80%;     /* Prevent overflow */
+            text-align: center;
+            z-index: 1;
+            white-space: nowrap;
+        }
+
+        .recipient-name {
+            color: rgba(232, 226, 217, 0.95);
+            font-size: 42px;
+            font-weight: bold;
+            font-family: 'Tajawal', 'Amiri', serif;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+            margin: 0;
+            padding: 10px 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
+</head>
+<body>
+    <div class="certificate">
+        <img src="../assets/participant.jpg" alt="Certificate Background" class="certificate-background-image">
+
+        <div class="name-container">
+            <h1 class="recipient-name">{{NAME}}</h1>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,9 +1,19 @@
 import pandas as pd
+import time
 import smtplib
+from email.utils import formataddr, formatdate
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 import os
+from datetime import datetime
+from email_content import participant_html, volunteer_html, plain_text
+
+LOG_FILE = 'failed_emails.log'
+
+def log_failure(recipient_email, recipient_name, error_message):
+    with open(LOG_FILE, 'a', encoding='utf-8') as f:
+        f.write(f"[{datetime.now()}] {recipient_name} <{recipient_email}> - ERROR: {error_message}\n")
 
 
 def send_certificates_by_email(csv_file, pdf_dir, sender_email, sender_password, smtp_server, smtp_port):
@@ -27,22 +37,21 @@ def send_certificates_by_email(csv_file, pdf_dir, sender_email, sender_password,
     except Exception as e:
         print(f"Error reading CSV file: {e}")
         return
-
-    # Establish SMTP connection outside the loop for efficiency
+    #SMTP
     try:
-        server = smtplib.SMTP_SSL(smtp_server, smtp_port)
-
-        server.login(sender_email, sender_password)
+        server = smtplib.SMTP_SSL(smtp_server, smtp_port, timeout=10)
         print(f"Successfully connected to SMTP server: {smtp_server}:{smtp_port}")
+        server.login(sender_email, sender_password)
+        print("Login successful.")
     except Exception as e:
         print(f"Error connecting to SMTP server or logging in: {e}")
-        print("Please check your sender_email, sender_password, SMTP server, and port.")
-        print("For Gmail, ensure 'Less secure app access' is enabled or use an App Password if 2FA is on.")
         return
 
+
     for index, row in df.iterrows():
-        recipient_name = row['name']
-        recipient_email = row['email']
+        recipient_name = row['Name']
+        recipient_email = row['Email'].lower()
+
 
 
         pdf_filename = f"{recipient_name}.pdf"
@@ -55,26 +64,16 @@ def send_certificates_by_email(csv_file, pdf_dir, sender_email, sender_password,
         print(f"\nPreparing email for: {recipient_name} <{recipient_email}>")
 
         #email body
-        msg = MIMEMultipart()
-        msg['From'] = sender_email
+        msg = MIMEMultipart('alternative')
+        msg['From'] = formataddr(("فريق آياتثون", sender_email))
         msg['To'] = recipient_email
-        msg['Subject'] = f"شهادة إتمام الدورة - {recipient_name}"
+        msg['Subject'] = "شهادة شكر وتقدير | شكرًا لعطائكم في آياتثون" #"شهادة مشاركة | شكرًا لمشاركتكم في آياتثون"
+        msg['Date'] = formatdate(localtime=True)
+        msg.add_header('List-Unsubscribe', '<mailto:unsubscribe@parmg.sa>')
+        msg.attach(MIMEText(plain_text, 'plain', 'utf-8'))
+        msg.attach(MIMEText(volunteer_html, 'html', 'utf-8'))
 
-        body_html = f"""
-                <html>
-                    <body dir="rtl" style="font-family: 'Tajawal', 'Cairo', 'Amiri', sans-serif; line-height: 1.6; color: #333;">
-                        <p style="text-align: right;">عزيزي/ـتي <strong>{recipient_name}</strong>،</p>
-                        <p style="text-align: right;">تهانينا!</p>
-                        <p style="text-align: right;">يسرنا أن نرفق لكم شهادة إتمام الدورة التدريبية التي أكملتموها بنجاح.</p>
-                        <p style="text-align: right;">نتمنى لكم كل التوفيق في مسيرتكم المهنية.</p>
-                        <p style="text-align: right;">مع خالص التقدير،</p>
-                        <p style="text-align: right;">فريق التدريب</p>
-                    </body>
-                </html>
-                """
-        msg.attach(MIMEText(body_html, 'html', 'utf-8'))
-
-        # Attach the PDF file
+        #attaching pdfs
         with open(pdf_path, 'rb') as f:
             attach = MIMEApplication(f.read(), _subtype="pdf")
             attach.add_header('Content-Disposition', 'attachment', filename=pdf_filename)
@@ -86,28 +85,33 @@ def send_certificates_by_email(csv_file, pdf_dir, sender_email, sender_password,
             server.send_message(msg)
             print(f"Email sent successfully to {recipient_email}")
         except Exception as e:
-            print(f"Failed to send email to {recipient_email}: {e}")
+            error_msg = f"{e.__class__.__name__}: {e}"
+            print(f"Failed to send email to {recipient_email}: {error_msg}")
+            log_failure(recipient_email, recipient_name, error_msg)
+
+        time.sleep(5)
 
     server.quit()  # Close the SMTP connection
     print("\nEmail sending process completed.")
 
 
-# --- Main execution ---
 if __name__ == "__main__":
 
-    SENDER_EMAIL = os.getenv("SENDER_EMAIL")
-    SENDER_PASSWORD = os.getenv("SENDER_PASSWORD")
-    SMTP_SERVER = 'smtp.gmail.com'
-    SMTP_PORT = 465  #ssl
+    SENDER_EMAIL = 'ayathon@parmg.sa'
+    SENDER_PASSWORD = 'Ay@th0n-@srar'
 
 
-    CSV_FILE_PATH = 'certified.csv'
-    PDF_OUTPUT_DIRECTORY = 'generated_certificates'
+    SMTP_SERVER = 'smtp.dreamhost.com'
+    SMTP_PORT = 465
+
+
+    CSV_FILE_PATH = 'recipients/volunteers_data.csv'
+    PDF_DIRECTORY = 'pdf_volunteers'
 
 
     send_certificates_by_email(
             CSV_FILE_PATH,
-            PDF_OUTPUT_DIRECTORY,
+            PDF_DIRECTORY,
             SENDER_EMAIL,
             SENDER_PASSWORD,
             SMTP_SERVER,

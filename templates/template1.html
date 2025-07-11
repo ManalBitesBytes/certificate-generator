@@ -1,504 +1,84 @@
+
 <!DOCTYPE html>
 <html dir="rtl" lang="ar">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>شهادة إتمام الدورة</title>
+    <title>شهادة مشاركة</title>
     <style>
-        /* Import Google Fonts - ensure they are loaded for WeasyPrint */
-        @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@300;400;600;700&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&family=Amiri:wght@400;700&display=swap');
+        @page {
+            size: A4 landscape;
+            margin: 0;
+        }
 
-        /* Global reset and box-sizing */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        /* Define the page size for PDF output */
-        /* A4 size: 210mm x 297mm. Set margins to ensure content fits well. */
-        @page {
-            size: A4; /* Or 'Letter', 'A3', etc. */
-            margin: 15mm; /* Adjust margins as needed */
-            /* WeasyPrint also supports @top-left, @bottom-right, etc. for headers/footers */
-        }
-
         body {
-            font-family: 'Tajawal', 'Cairo', 'Amiri', sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
             display: flex;
-            align-items: center;
             justify-content: center;
-            direction: rtl;
-            padding: 20px; /* Padding for screen view */
-        }
-
-        /* Ensure the certificate container has a fixed width for PDF rendering */
-        /* 850px is roughly proportional to A4 width minus margins, adjust as needed */
-        .certificate-container {
-            position: relative;
-            width: 100%;
-            max-width: 850px; /* Adjusted for better A4 fit */
-            background: #fff;
-            border-radius: 25px;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Amiri','Tajawal', sans-serif;
+            width: 100vw;
+            height: 100vh;
             overflow: hidden;
-            margin: 20px; /* Margin for screen view */
-        }
-
-        .certificate-border {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            right: 20px;
-            bottom: 20px;
-            border: 2px dashed rgba(70, 130, 180, 0.3);
-            border-radius: 15px;
-            pointer-events: none;
-            z-index: 1;
         }
 
         .certificate {
-            position: relative;
-            padding: 50px; /* Maintain original padding */
-            z-index: 2;
-        }
 
-        .watermark {
-            position: absolute;
-            opacity: 0.05;
-            font-size: 180px;
-            font-weight: 700;
-            color: #4682b4;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-15deg);
-            z-index: 0;
-            white-space: nowrap;
-            user-select: none;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            position: relative;
-        }
-
-        .institute-seal {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100px;
-            height: 100px;
-            border: 3px solid #4682b4;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            color: #4682b4;
-            font-weight: bold;
-            line-height: 1.4;
-            text-align: center;
-            background: rgba(255, 255, 255, 0.8);
-        }
-
-        .logo-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .logo {
-            width: 90px;
-            height: 90px;
-            background: linear-gradient(135deg, #4682b4, #5f9ea0);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 28px;
-            font-weight: bold;
-            margin-left: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-
-        .institute-name {
-            font-size: 24px;
-            color: #4682b4;
-            font-weight: 700;
-        }
-
-        .title {
-            font-size: 42px;
-            font-weight: 700;
-            color: #2c3e50;
-            margin: 20px 0 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-            position: relative;
-            display: inline-block;
-        }
-
-        .title::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            right: 0;
-            width: 50%;
-            height: 3px;
-            background: linear-gradient(90deg, #4682b4, transparent);
-            border-radius: 3px;
-        }
-
-        .subtitle {
-            font-size: 20px;
-            color: #7f8c8d;
-            margin-bottom: 10px;
-        }
-
-        .certificate-number {
-            font-size: 16px;
-            color: #555;
-            margin-bottom: 30px;
-            text-align: left;
-        }
-
-        .content {
-            text-align: center;
-            margin-bottom: 40px;
-            position: relative;
-        }
-
-        .awarded-to {
-            font-size: 24px;
-            color: #34495e;
-            margin-bottom: 20px;
-        }
-
-        .recipient-name {
-            font-size: 52px;
-            font-weight: 700;
-            color: #2c3e50;
-            margin-bottom: 30px;
-            padding: 20px 40px;
-            border: 3px solid #4682b4;
-            border-radius: 10px;
-            display: inline-block;
-            min-width: 500px; /* This might be too wide for A4, let's adjust */
-            max-width: 80%; /* Use max-width to allow shrinking */
-            background: rgba(70, 130, 180, 0.05);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            width: 297mm;
+            height: 210mm;
             position: relative;
             overflow: hidden;
-            word-break: break-word; /* Allow long names to wrap */
         }
 
-        .recipient-name::before {
-            content: '';
+        .certificate-background-image {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, transparent 100%);
-            pointer-events: none;
+            object-fit: cover; /
+            z-index: -1;
         }
 
-        .decorative-line {
-            width: 250px;
-            height: 3px;
-            background: linear-gradient(90deg, #4682b4, #5f9ea0, #4682b4);
-            margin: 30px auto;
-            border-radius: 2px;
-            position: relative;
-        }
-
-        .decorative-line::before,
-        .decorative-line::after {
-            content: '✧';
+        .name-container {
             position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #4682b4;
-            font-size: 20px;
-        }
-
-        .decorative-line::before {
-            right: -25px;
-        }
-
-        .decorative-line::after {
-            left: -25px;
-        }
-
-        .course-info {
-            font-size: 24px;
-            color: #555;
-            line-height: 1.8;
-            margin-bottom: 30px;
-            position: relative;
-        }
-
-        .course-details {
-            background: rgba(245, 245, 245, 0.7);
-            border-radius: 10px;
-            padding: 20px;
-            margin: 30px 0;
-            border: 1px solid #eee;
-        }
-
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
-            font-size: 18px;
-        }
-
-        .detail-label {
-            font-weight: 600;
-            color: #4682b4;
-            min-width: 150px;
-            text-align: left;
-        }
-
-        .detail-value {
-            color: #555;
-            text-align: right;
-            flex-grow: 1;
-        }
-
-        .footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-top: 50px;
-            position: relative;
-        }
-
-        .signature {
+            top: 43%;
+            left: 45%;          /* Start from center */
+            transform: translateX(-50%); /* Shift back by half of container's width */
+            width: auto;        /* Let content determine width */
+            max-width: 80%;     /* Prevent overflow */
             text-align: center;
-            flex: 1;
-            position: relative;
-            padding: 0 20px;
-        }
-
-        .signature-box {
-            height: 80px;
-            margin-bottom: 10px;
-            position: relative;
-        }
-
-        .signature-line {
-            width: 180px;
-            height: 2px;
-            background: #34495e;
-            margin: 0 auto;
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .signature-text {
-            font-size: 16px;
-            color: #7f8c8d;
-            margin-top: 5px;
-        }
-
-        .signature-title {
-            font-size: 14px;
-            color: #4682b4;
-            margin-bottom: 5px;
-        }
-
-        .date {
-            font-size: 18px;
-            color: #555;
-            text-align: center;
-            flex: 1;
-            background: rgba(70, 130, 180, 0.05);
-            padding: 15px;
-            border-radius: 8px;
-            margin: 0 20px;
-        }
-
-        .corner-ornament {
-            position: absolute;
-            width: 60px;
-            height: 60px;
-            opacity: 0.8;
             z-index: 1;
+            white-space: nowrap;
         }
 
-        .corner-ornament.top-right {
-            top: 0;
-            left: 0;
-            border-top: 3px solid #4682b4;
-            border-left: 3px solid #4682b4;
-            border-top-left-radius: 15px;
-        }
-
-        .corner-ornament.top-left {
-            top: 0;
-            right: 0;
-            border-top: 3px solid #4682b4;
-            border-right: 3px solid #4682b4;
-            border-top-right-radius: 15px;
-        }
-
-        .corner-ornament.bottom-right {
-            bottom: 0;
-            left: 0;
-            border-bottom: 3px solid #4682b4;
-            border-left: 3px solid #4682b4;
-            border-bottom-left-radius: 15px;
-        }
-
-        .corner-ornament.bottom-left {
-            bottom: 0;
-            right: 0;
-            border-bottom: 3px solid #4682b4;
-            border-right: 3px solid #4682b4;
-            border-bottom-right-radius: 15px;
-        }
-
-        .stamp {
-            position: absolute;
-            bottom: 40px;
-            left: 40px;
-            width: 100px;
-            height: 100px;
-            background: radial-gradient(circle, rgba(255,0,0,0.1) 0%, rgba(255,0,0,0.3) 100%);
-            border: 2px dashed rgba(255,0,0,0.5);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: rgba(255,0,0,0.7);
-            font-size: 14px;
+        .recipient-name {
+            color: rgba(232, 226, 217, 0.95);
+            font-size: 42px;
             font-weight: bold;
-            transform: rotate(-15deg);
-        }
-
-        /* Media query for screen responsiveness, separate from print styles */
-        @media (max-width: 768px) {
-            .certificate {
-                padding: 30px;
-            }
-
-            .recipient-name {
-                font-size: 36px;
-                min-width: auto;
-                width: 100%;
-                padding: 15px;
-            }
-
-            .footer {
-                flex-direction: column;
-                align-items: center;
-                gap: 30px;
-            }
-
-            .course-info {
-                font-size: 20px;
-            }
+            font-family: 'Tajawal', 'Amiri', serif;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+            margin: 0;
+            padding: 10px 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
     </style>
 </head>
 <body>
-    <div class="certificate-container">
-        <div class="certificate-border"></div>
-        <div class="watermark">معهد التدريب المتقدم</div>
+    <div class="certificate">
+        <img src="../assets/participant.jpg" alt="Certificate Background" class="certificate-background-image">
 
-        <div class="corner-ornament top-right"></div>
-        <div class="corner-ornament top-left"></div>
-        <div class="corner-ornament bottom-right"></div>
-        <div class="corner-ornament bottom-left"></div>
-
-        <div class="certificate">
-            <div class="institute-seal">
-                معهد<br>التدريب<br>المتقدم
-            </div>
-
-            <div class="certificate-number">
-                رقم الشهادة: #{{CERT_NUMBER}}
-            </div>
-
-            <div class="header">
-                <div class="logo-container">
-                    <div class="logo">شهادة</div>
-                    <div class="institute-name">معهد التدريب المتقدم</div>
-                </div>
-                <h1 class="title">شهادة إتمام الدورة</h1>
-                <p class="subtitle">برعاية وزارة التعليم العالي والبحث العلمي</p>
-            </div>
-
-            <div class="content">
-                <p class="awarded-to">تمنح هذه الشهادة إلى</p>
-                <div class="recipient-name">{{NAME}}</div>
-
-                <div class="decorative-line"></div>
-
-                <div class="course-info">
-                    لإتمامه بنجاح متطلبات دورة التطوير المهني<br>
-                    في مجال تقنية المعلومات وتطوير البرمجيات
-                </div>
-
-                <div class="course-details">
-                    <div class="detail-row">
-                        <span class="detail-label">اسم الدورة:</span>
-                        <span class="detail-value">تطوير تطبيقات الويب المتقدمة</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">المدة:</span>
-                        <span class="detail-value">120 ساعة تدريبية</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">الفترة:</span>
-                        <span class="detail-value">من {{START_DATE}} إلى {{END_DATE}}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">التقدير:</span>
-                        <span class="detail-value">ممتاز ({{GRADE}}%)</span>
-                    </div>
-                </div>
-
-                <div class="course-info">
-                    وقد أظهر المكرم خلال فترة التدريب التزامًا ممتازًا<br>
-                    ومهارات عالية في استيعاب المفاهيم وتطبيقها العملي
-                </div>
-            </div>
-
-            <div class="footer">
-                <div class="signature">
-                    <div class="signature-title">مدير المعهد</div>
-                    <div class="signature-box">
-                        <div class="signature-line"></div>
-                    </div>
-                    <p class="signature-text">د. أحمد محمد علي</p>
-                </div>
-
-                <div class="date">
-                    <p>صدر في: {{DATE}}</p>
-                    <p>مكان الإصدار: الرياض، المملكة العربية السعودية</p>
-                </div>
-
-                <div class="signature">
-                    <div class="signature-title">رئيس قسم التدريب</div>
-                    <div class="signature-box">
-                        <div class="signature-line"></div>
-                    </div>
-                    <p class="signature-text">م. خالد عبدالله السعدي</p>
-                </div>
-            </div>
-
-            <div class="stamp">
-                ختم المعهد
-            </div>
+        <div class="name-container">
+            <h1 class="recipient-name">{{NAME}}</h1>
         </div>
     </div>
 </body>
